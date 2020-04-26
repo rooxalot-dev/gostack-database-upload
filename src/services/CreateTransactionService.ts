@@ -41,12 +41,15 @@ class CreateTransactionService {
       );
     }
 
-    const existingCategory = await this.categoriesRepository.findOne({
+    let existingCategory = await this.categoriesRepository.findOne({
       where: { title: category },
     });
 
     if (!existingCategory) {
-      throw new AppError('The informed category does not exist.');
+      const createdCategory = this.categoriesRepository.create({
+        title: category,
+      });
+      existingCategory = await this.categoriesRepository.save(createdCategory);
     }
 
     const validType: 'income' | 'outcome' = type;

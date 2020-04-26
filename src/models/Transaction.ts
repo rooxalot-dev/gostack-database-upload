@@ -5,9 +5,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
   ManyToOne,
-  JoinTable,
   JoinColumn,
 } from 'typeorm';
 import Category from './Category';
@@ -24,7 +22,7 @@ class Transaction {
   @Column()
   type: 'income' | 'outcome';
 
-  @Column()
+  @Column('decimal')
   value: number;
 
   @Column({ type: 'uuid' })
