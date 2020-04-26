@@ -48,7 +48,7 @@ class ImportTransactionsService {
     // Obtem e salva novas transações
     const createdTransactions = importedTransactions.map(it => {
       return this.transactionsRepository.create({
-        title: it.title,
+        title: it.title.trim(),
         type: it.type,
         value: it.value,
         category: allCategories.find(ac => ac.title === it.category),
@@ -73,19 +73,26 @@ class ImportTransactionsService {
           .on('data', csvrow => {
             const [title, type, value, category] = csvrow;
 
-            const readTransaction: ImportedTransaction = {
-              title,
-              type,
-              value,
-              category,
-            };
+            const trimmedType = type.trim();
+            const trimmedCategory = category.trim();
 
-            if (!categories.some(c => c.title === category)) {
+            const categoryHasBeenRead = categories.some(
+              c => c.title === trimmedCategory,
+            );
+
+            if (!categoryHasBeenRead) {
               const createdCategory = this.categoryRepository.create({
-                title: category,
+                title: trimmedCategory,
               });
               categories.push(createdCategory);
             }
+
+            const readTransaction: ImportedTransaction = {
+              title,
+              type: trimmedType,
+              value,
+              category: trimmedCategory,
+            };
 
             transactions.push(readTransaction);
           })
